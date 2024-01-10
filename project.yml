@@ -1,0 +1,13 @@
+name: SimpleBudget
+options:
+  bundleIdPrefix: com.corybuecker
+settings:
+  DEVELOPMENT_TEAM: ${DEVELOPMENT_TEAM}
+  INFOPLIST_FILE: Info.plist
+targets:
+  SimpleBudget:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.2"
+    sources:
+      - Sources
