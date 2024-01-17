@@ -1,13 +1,34 @@
 name: SimpleBudget
 options:
-  bundleIdPrefix: com.corybuecker
+  bundleIdPrefix: dev.corybuecker
 settings:
   DEVELOPMENT_TEAM: ${DEVELOPMENT_TEAM}
-  INFOPLIST_FILE: Info.plist
 targets:
-  SimpleBudget:
+  simple-budget:
     type: application
     platform: iOS
     deploymentTarget: "17.2"
+    supportedDestinations: [iOS]
     sources:
-      - Sources
+      - path: Sources
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: en
+        CFBundleIdentifier: dev.corybuecker.simple-budget
+        CFBundleName: Simple Budget
+        CFBundlePackageType: APPL
+        CFBundleShortVersionString: 1.0.1
+        CFBundleVersion: 1.0.1
+        ITSAppUsesNonExemptEncryption: false
+        UIBackgroundModes: [remote-notification]
+        UILaunchScreen: {}
+        UIRequiresFullScreen: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    entitlements:
+      path: Sources/simple-budget.entitlements
+      properties:
+        aps-environment: development
+        com.apple.developer.icloud-container-identifiers: [iCloud.dev.corybuecker.simple-budget]
+        com.apple.developer.icloud-services: [CloudKit]
+

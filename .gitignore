@@ -94,3 +94,6 @@ iOSInjectionProject/
 
 SimpleBudget.xcodeproj
 buildServer.json
+.compile
+Sources/Info.plist
+Sources/simple-budget.entitlements
