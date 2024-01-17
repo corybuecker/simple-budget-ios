@@ -3,9 +3,16 @@ import SwiftUI
 
 @main
 struct SimpleBudget: App {
+  let modelContainer: ModelContainer
+
+  init() {
+    let schema: Schema = Schema(versionedSchema: SchemaV101.self)
+    modelContainer = try! ModelContainer(for: schema)
+  }
+
   var body: some Scene {
     WindowGroup {
-      ContentView().modelContainer(for: [Account.self, Saving.self, Goal.self])
+      ContentView().modelContainer(modelContainer)
     }
   }
 }
