@@ -10,11 +10,28 @@ struct SavingForm: View {
   @Environment(\.modelContext) var modelContext: ModelContext
   @Environment(\.dismiss) var dismiss
 
+  private var numberFormatter: NumberFormatter {
+    let f = NumberFormatter()
+    f.zeroSymbol = ""
+    return f
+  }
+
   var body: some View {
     Form {
       TextField("Name", text: $name)
-      TextField("Amount", value: $amount, format: .number)
-    }.navigationBarTitle(saving?.name ?? "New Saving").toolbar {
+      TextField("Amount", value: $amount, formatter: numberFormatter)
+    }
+    .navigationBarTitle(saving?.name ?? "New Saving")
+    .navigationBarBackButtonHidden()
+    .toolbar {
+      ToolbarItem(placement: .navigationBarLeading) {
+        Button {
+          dismiss()
+        } label: {
+          Image(systemName: "x.circle.fill")
+        }
+        .tint(.gray)
+      }
       ToolbarItem(placement: .navigationBarTrailing) {
         Button("Save") {
           if let saving = saving {
