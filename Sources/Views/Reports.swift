@@ -4,7 +4,7 @@ import SwiftUI
 struct Reports: View {
   @Environment(\.modelContext) var modelContext: ModelContext
   @Query var accounts: [Account]
-  @Query var savings: [Saving]
+  @Query var envelopes: [Envelope]
   @Query var goals: [Goal]
 
   var total: Decimal {
@@ -15,10 +15,10 @@ struct Reports: View {
           ? accumulator - Decimal(account.balance) : accumulator + Decimal(account.balance)
       })
 
-    let savingsTotal: Decimal = savings.reduce(
+    let envelopesTotal: Decimal = envelopes.reduce(
       0,
-      { accumulator, saving in
-        accumulator - Decimal(saving.amount)
+      { accumulator, envelope in
+        accumulator - Decimal(envelope.amount)
       })
 
     let goalsTotal: Decimal = goals.reduce(
@@ -27,12 +27,12 @@ struct Reports: View {
         accumulator - GoalService(goal: goal).amortized()
       })
 
-    return accountsTotal + savingsTotal + goalsTotal
+    return accountsTotal + envelopesTotal + goalsTotal
   }
 
   var daysRemaining: Int? = try? DateService().daysUntilEndOfMonth()
 
-  func dailySaving() -> Decimal {
+  func dailyEnvelope() -> Decimal {
     goals.reduce(
       0,
       { accumulator, goal in
@@ -51,15 +51,12 @@ struct Reports: View {
   @State private var lastRendered = Date()
 
   var body: some View {
-    ZStack {
-      Color.green.opacity(0.1).ignoresSafeArea()
-      VStack {
-        Breakdown(
-          lastRendered: lastRendered, total: total, daysRemaining: daysRemaining,
-          remainingAmount: remainingAmount(), dailySaving: dailySaving())
-        Button("Refresh") {
-          lastRendered = Date()
-        }
+    VStack {
+      Breakdown(
+        lastRendered: lastRendered, total: total, daysRemaining: daysRemaining,
+        remainingAmount: remainingAmount(), dailyEnvelope: dailyEnvelope())
+      Button("Refresh") {
+        lastRendered = Date()
       }
     }
   }
@@ -70,7 +67,7 @@ struct Breakdown: View {
   let total: Decimal
   let daysRemaining: Int?
   let remainingAmount: Decimal
-  let dailySaving: Decimal
+  let dailyEnvelope: Decimal
 
   private var remainingAmountDbl: Double {
     NSDecimalNumber(decimal: remainingAmount).doubleValue
@@ -102,6 +99,6 @@ struct Breakdown: View {
       Text(remainingAmount, format: .currency(code: "USD").precision(.fractionLength(4)))
     }
 
-    Text(dailySaving, format: .currency(code: "USD"))
+    Text(dailyEnvelope, format: .currency(code: "USD"))
   }
 }

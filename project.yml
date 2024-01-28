@@ -11,6 +11,9 @@ targets:
     supportedDestinations: [iOS]
     settings:
       ENABLE_USER_SCRIPT_SANDBOXING: true
+      TARGETED_DEVICE_FAMILY: 1 # 1: iPhone, iPod touch
+      SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: false
+      SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: false
     sources:
       - path: Sources
     info:
@@ -21,8 +24,8 @@ targets:
         CFBundleIdentifier: dev.corybuecker.simple-budget
         CFBundleName: Budget
         CFBundlePackageType: APPL
-        CFBundleShortVersionString: 1.0.2
-        CFBundleVersion: 1.0.2
+        CFBundleShortVersionString: 1.0.3
+        CFBundleVersion: 1.0.3
         ITSAppUsesNonExemptEncryption: false
         LSApplicationCategoryType: public.app-category.finance
         UIBackgroundModes: [remote-notification]

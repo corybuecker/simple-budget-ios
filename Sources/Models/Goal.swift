@@ -8,9 +8,26 @@ enum GoalRecurrence: Codable {
   case yearly
 }
 
-typealias Goal = GoalV101.Goal
+typealias Goal = GoalV102.Goal
 
 struct GoalV101 {
+
+  @Model
+  class Goal {
+    var name: String = ""
+    var amount: Double = 0.0
+    var recurrence: GoalRecurrence = GoalRecurrence.monthly
+    var targetDate: Date = Date()
+
+    init(name: String, amount: Double, recurrence: GoalRecurrence, targetDate: Date) {
+      self.name = name
+      self.amount = amount
+      self.recurrence = recurrence
+      self.targetDate = targetDate
+    }
+  }
+}
+struct GoalV102 {
 
   @Model
   class Goal {

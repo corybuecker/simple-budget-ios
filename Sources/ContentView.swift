@@ -14,9 +14,9 @@ struct ContentView: View {
         .tabItem {
           Label("Accounts", systemImage: "building.columns")
         }
-      SavingList()
+      EnvelopeList()
         .tabItem {
-          Label("Savings", systemImage: "dollarsign.circle")
+          Label("Envelopes", systemImage: "envelope")
         }
       GoalList()
         .tabItem {
