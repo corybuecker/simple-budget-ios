@@ -51,12 +51,15 @@ struct Reports: View {
   @State private var lastRendered = Date()
 
   var body: some View {
-    VStack {
-      Breakdown(
-        lastRendered: lastRendered, total: total, daysRemaining: daysRemaining,
-        remainingAmount: remainingAmount(), dailySaving: dailySaving())
-      Button("Refresh") {
-        lastRendered = Date()
+    ZStack {
+      Color.green.opacity(0.1).ignoresSafeArea()
+      VStack {
+        Breakdown(
+          lastRendered: lastRendered, total: total, daysRemaining: daysRemaining,
+          remainingAmount: remainingAmount(), dailySaving: dailySaving())
+        Button("Refresh") {
+          lastRendered = Date()
+        }
       }
     }
   }
@@ -69,7 +72,23 @@ struct Breakdown: View {
   let remainingAmount: Decimal
   let dailySaving: Decimal
 
+  private var remainingAmountDbl: Double {
+    NSDecimalNumber(decimal: remainingAmount).doubleValue
+  }
+
   var body: some View {
+    Gauge(value: remainingAmountDbl, in: 65...85) {
+      Text(remainingAmount, format: .currency(code: "USD").precision(.fractionLength(0)))
+    } currentValueLabel: {
+      Text(remainingAmount, format: .currency(code: "USD").precision(.fractionLength(0)))
+    } minimumValueLabel: {
+      Text("65")
+    } maximumValueLabel: {
+      Text("85")
+    }
+    .gaugeStyle(.accessoryCircular)
+    .scaleEffect(1.5)
+    .padding()
     Text("Reports").foregroundColor(
       Color(
         red: Double.random(in: 0...1),
@@ -79,7 +98,10 @@ struct Breakdown: View {
     if let daysRemaining {
       Text("Days remaining: \(daysRemaining)")
     }
-    Text(remainingAmount, format: .currency(code: "USD").precision(.fractionLength(4)))
+    Section("Remaining") {
+      Text(remainingAmount, format: .currency(code: "USD").precision(.fractionLength(4)))
+    }
+
     Text(dailySaving, format: .currency(code: "USD"))
   }
 }

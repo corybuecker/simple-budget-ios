@@ -14,12 +14,26 @@ struct AccountForm: View {
   var body: some View {
     Form {
       TextField("Name", text: $name)
-      TextField("Balance", value: $balance, format: .number)
-      Picker("Debt", selection: $debt) {
-        Text("No").tag(false)
-        Text("Yes").tag(true)
-      }.pickerStyle(.segmented)
-    }.navigationBarTitle("New Account").toolbar {
+      TextField("Balance", value: $balance, format: .currency(code: "USD"))
+      Section("Debt?") {
+        Picker("Debt", selection: $debt) {
+          Text("No").tag(false)
+          Text("Yes").tag(true)
+        }
+        .pickerStyle(.segmented)
+      }
+    }
+    .navigationBarTitle(account?.name ?? "New Account")
+    .navigationBarBackButtonHidden()
+    .toolbar {
+      ToolbarItem(placement: .navigationBarLeading) {
+        Button {
+          dismiss()
+        } label: {
+          Image(systemName: "x.circle.fill")
+        }
+        .tint(.gray)
+      }
       ToolbarItem(placement: .navigationBarTrailing) {
         Button("Save") {
           if let account {
@@ -32,7 +46,8 @@ struct AccountForm: View {
           dismiss()
         }
       }
-    }.onAppear {
+    }
+    .onAppear {
       if let account {
         name = account.name
         balance = account.balance
