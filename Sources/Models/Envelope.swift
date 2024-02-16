@@ -1,11 +1,11 @@
 import SwiftData
 
-typealias Saving = SavingV101.Saving
+typealias Envelope = EnvelopeV102.Envelope
 
-struct SavingV101 {
+struct EnvelopeV102 {
 
   @Model
-  class Saving {
+  class Envelope {
     var name: String = ""
     var amount: Double = 0.0
 

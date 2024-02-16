@@ -3,7 +3,7 @@ import SwiftUI
 
 struct GoalList: View {
   @Environment(\.modelContext) var modelContext: ModelContext
-  @Query<Goal> private var goals: [Goal]
+  @Query<Goal>(sort: [SortDescriptor<Goal>(\.targetDate)]) private var goals: [Goal]
 
   @State private var lastRendered: Date = Date()
 
@@ -66,15 +66,15 @@ struct GoalListItem: View {
         .foregroundStyle(.secondary)
       }
     }
-    .listRowBackground(
-      LinearGradient(
-        stops: [
-          Gradient.Stop(
-            color: .gray.opacity(0.01),
-            location: NSDecimalNumber(decimal: gradientDistance).doubleValue),
-          Gradient.Stop(
-            color: .white, location: NSDecimalNumber(decimal: gradientDistance).doubleValue),
-        ], startPoint: .topLeading, endPoint: .bottomTrailing)
-    )
+    //    .listRowBackground(
+    //      LinearGradient(
+    //        stops: [
+    //          Gradient.Stop(
+    //            color: .gray.opacity(0.01),
+    //            location: NSDecimalNumber(decimal: gradientDistance).doubleValue),
+    //          Gradient.Stop(
+    //            color: .white, location: NSDecimalNumber(decimal: gradientDistance).doubleValue),
+    //        ], startPoint: .topLeading, endPoint: .bottomTrailing)
+    //    )
   }
 }

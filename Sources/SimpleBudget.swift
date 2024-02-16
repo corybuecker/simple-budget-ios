@@ -6,7 +6,7 @@ struct SimpleBudget: App {
   let modelContainer: ModelContainer
 
   init() {
-    let schema: Schema = Schema(versionedSchema: SchemaV101.self)
+    let schema: Schema = Schema(versionedSchema: SchemaV102.self)
     modelContainer = try! ModelContainer(for: schema)
   }
 

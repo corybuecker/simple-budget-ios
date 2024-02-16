@@ -4,24 +4,52 @@ import SwiftUI
 struct GoalForm: View {
   let goal: Goal?
 
+  enum FocusedField {
+    case name, amount
+  }
+
   @State private var name: String = ""
-  @State private var amount: Double = 0.0
+  @State private var amount: Double?
   @State private var recurrence: GoalRecurrence = .monthly
   @State private var targetDate: Date = Date()
+
+  @FocusState private var focusedField: FocusedField?
 
   @Environment(\.modelContext) var modelContext: ModelContext
   @Environment(\.dismiss) var dismiss
 
-  private var numberFormatter: NumberFormatter {
-    let f = NumberFormatter()
-    f.zeroSymbol = ""
-    return f
-  }
-
   var body: some View {
     Form {
-      TextField("Name", text: $name)
-      TextField("Amount", value: $amount, formatter: numberFormatter)
+      ZStack(alignment: .trailing) {
+        TextField("Name", text: $name).focused($focusedField, equals: .name)
+        if focusedField == .name {
+          Spacer()
+          Button {
+            name = ""
+          } label: {
+            Image(systemName: "xmark.circle.fill")
+              .foregroundColor(.gray)
+          }
+        }
+      }
+
+      ZStack(alignment: .trailing) {
+        TextField(
+          "Amount", value: $amount,
+          format: .currency(code: Locale.current.currency?.identifier ?? "USD")
+        )
+        .focused($focusedField, equals: .amount)
+        if focusedField == .amount {
+          Spacer()
+          Button {
+            amount = nil
+          } label: {
+            Image(systemName: "xmark.circle.fill")
+              .foregroundColor(.gray)
+          }
+        }
+      }
+
       Picker("Recurrance", selection: $recurrence) {
         Text("Daily").tag(GoalRecurrence.daily)
         Text("Weekly").tag(GoalRecurrence.weekly)
@@ -42,21 +70,8 @@ struct GoalForm: View {
         .tint(.gray)
       }
       ToolbarItem(placement: .navigationBarTrailing) {
-        Button("Save") {
-          let startOfDay = Calendar.current.startOfDay(for: targetDate)
+        Button("Save", action: save)
 
-          if let goal = goal {
-            goal.name = name
-            goal.amount = amount
-            goal.recurrence = recurrence
-            goal.targetDate = startOfDay
-          } else {
-            modelContext.insert(
-              Goal(name: name, amount: amount, recurrence: recurrence, targetDate: startOfDay))
-          }
-
-          dismiss()
-        }
       }
     }.onAppear {
       if let goal {
@@ -66,5 +81,21 @@ struct GoalForm: View {
         targetDate = goal.targetDate
       }
     }
+  }
+
+  func save() {
+    let startOfDay = Calendar.current.startOfDay(for: targetDate)
+
+    if let goal = goal {
+      goal.name = name
+      goal.amount = amount ?? 0
+      goal.recurrence = recurrence
+      goal.targetDate = startOfDay
+    } else {
+      modelContext.insert(
+        Goal(name: name, amount: amount ?? 0, recurrence: recurrence, targetDate: startOfDay))
+    }
+
+    dismiss()
   }
 }
