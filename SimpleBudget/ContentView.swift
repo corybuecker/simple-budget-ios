@@ -2,13 +2,17 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        NavigationStack {
-            VStack {
-                Text("Simple Budget")
-                    .font(.title)
+        TabView {
+            
+            Tab("Accounts", systemImage: "dollarsign") {
+                Text("test")
             }
-            .padding()
-            .navigationTitle("Home")
+            Tab("Envelopes", systemImage: "dollarsign") {
+                Text("test")
+            }
+            Tab("Goals", systemImage: "dollarsign") {
+                Text("test")
+            }
         }
     }
 }
