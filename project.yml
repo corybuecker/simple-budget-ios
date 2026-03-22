@@ -1,0 +1,14 @@
+name: SimpleBudget
+options:
+  bundleIdPrefix: dev.corybuecker
+targets:
+  SimpleBudget:
+    type: application
+    platform: iOS
+    deploymentTarget: "26"
+    settings:
+      ENABLE_USER_SCRIPT_SANDBOXING: YES
+      GENERATE_INFOPLIST_FILE: YES
+    sources:
+      - path: SimpleBudget
+      - path: SimpleBudget/Assets.xcassets
