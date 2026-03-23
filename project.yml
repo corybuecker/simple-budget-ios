@@ -11,3 +11,4 @@ targets:
       GENERATE_INFOPLIST_FILE: YES
     sources:
       - path: SimpleBudget
+      - path: SimpleBudget/Assets.xcassets
