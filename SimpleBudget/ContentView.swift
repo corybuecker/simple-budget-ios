@@ -1,18 +1,30 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selectedTab: TabItem = .accounts
+
     var body: some View {
-        TabView {
-            Tab("Accounts", systemImage: "dollarsign") {
-                Text("test")
+        TabView(selection: $selectedTab) {
+            Tab("Accounts", systemImage: "dollarsign.bank.building", value: .accounts) {
+                AccountList()
             }
-            Tab("Envelopes", systemImage: "dollarsign") {
-                Text("test")
+            Tab("Envelopes", systemImage: "envelope", value: .envelopes) {
+                EnvelopeList()
             }
-            Tab("Goals", systemImage: "dollarsign") {
-                Text("test")
+            Tab("Goals", systemImage: "chart.pie", value: .goals) {
+                GoalList()
+            }
+            Tab("Reports", systemImage: "dollarsign.gauge.chart.lefthalf.righthalf", value: .reports) {
+                Reports(viewModel: nil)
             }
         }
+    }
+
+    private enum TabItem {
+        case accounts
+        case goals
+        case envelopes
+        case reports
     }
 }
 
