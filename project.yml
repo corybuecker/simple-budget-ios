@@ -9,6 +9,12 @@ targets:
     settings:
       ENABLE_USER_SCRIPT_SANDBOXING: YES
       GENERATE_INFOPLIST_FILE: YES
+      # build for iOS only
+      TARGETED_DEVICE_FAMILY: 1
+    info:
+      path: Info.plist
+      properties:
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
     sources:
       - path: SimpleBudget
-      - path: SimpleBudget/Assets.xcassets
