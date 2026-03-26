@@ -6,7 +6,7 @@ struct AccountList: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var path = NavigationPath()
-    
+
     var body: some View {
         NavigationStack(path: $path) {
             List(accounts) { account in
@@ -29,10 +29,8 @@ struct AccountList: View {
             }
         }
     }
-    
-    private func addAccount() {
 
-    }
+    private func addAccount() {}
 }
 
 #Preview {
