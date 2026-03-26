@@ -1,25 +1,33 @@
-
+import SwiftData
 import SwiftUI
 
 struct AccountDetail: View {
-    init(account _: Account) {}
-
-    @State private var name: String = ""
-    @State private var amount: Decimal?
+    @Bindable var account: Account
 
     var body: some View {
         Form {
-            Section("Account Details") {
-                TextField("Name", text: $name)
-                TextField("Amount", value: $amount, format: .number)
-                    .keyboardType(.decimalPad)
-            }
+            TextField("Name", text: $account.name)
+            TextField("Amount", value: $account.balance, format: .number)
+                .keyboardType(.decimalPad)
+            Toggle("Debt?", isOn: $account.isDebt)
         }
-        .navigationTitle("Accounts")
+        .navigationTitle(account.name)
     }
 }
 
 #Preview {
-    var account = Account()
-    AccountDetail(account: account)
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Account.self, configurations: config)
+    let sample = Account()
+    
+    sample.name = "Checking"
+    sample.balance = 1000
+    sample.isDebt = false
+    
+    container.mainContext.insert(sample)
+
+    return NavigationStack {
+        AccountDetail(account: sample)
+    }
+    .modelContainer(container)
 }
