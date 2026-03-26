@@ -8,16 +8,15 @@ struct AccountDetail: View {
     @State private var amount: Decimal?
 
     var body: some View {
-            Form {
-                Section("Account Details") {
-                    TextField("Name", text: $name)
-                    TextField("Amount", value: $amount, format: .number)
-                        .keyboardType(.decimalPad)
-                }
+        Form {
+            Section("Account Details") {
+                TextField("Name", text: $name)
+                TextField("Amount", value: $amount, format: .number)
+                    .keyboardType(.decimalPad)
             }
-            .navigationTitle("Accounts")
         }
-    
+        .navigationTitle("Accounts")
+    }
 }
 
 #Preview {
