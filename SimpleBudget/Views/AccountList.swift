@@ -5,12 +5,17 @@ struct AccountList: View {
     @Query var accounts: [Account]
     @Environment(\.modelContext) private var modelContext
 
-    @State private var path = NavigationPath()
+    @State private var path: NavigationPath = NavigationPath()
+    
+    enum Route: Hashable {
+        case existingAccount(account: Account)
+        case newAccount(account: Account)
+    }
 
     var body: some View {
         NavigationStack(path: $path) {
             List(accounts) { account in
-                NavigationLink(value: account) {
+                NavigationLink(value: Route.existingAccount(account: account)) {
                     if account.isDebt {
                         Text("\(account.name) (\(account.balance, format: .currency(code: "USD").precision(.fractionLength(0))))").foregroundColor(.red)
                     } else {
@@ -18,8 +23,13 @@ struct AccountList: View {
                     }
                 }
             }
-            .navigationDestination(for: Account.self) { account in
-                AccountDetail(account: account)
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .existingAccount(let account):
+                    AccountDetail(account: account, isNew: false)
+                case .newAccount(let account):
+                    AccountDetail(account: account, isNew: true)
+                }
             }
             .navigationTitle("Accounts")
             .toolbar {
@@ -30,7 +40,12 @@ struct AccountList: View {
         }
     }
 
-    private func addAccount() {}
+    private func addAccount() {
+        let account = Account()
+        account.name = "New Account"
+        modelContext.insert(account)
+        path.append(Route.newAccount(account: account))
+    }
 }
 
 #Preview {

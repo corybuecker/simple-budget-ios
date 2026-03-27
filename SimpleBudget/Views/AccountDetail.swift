@@ -3,6 +3,10 @@ import SwiftUI
 
 struct AccountDetail: View {
     @Bindable var account: Account
+    let isNew: Bool
+    
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         Form {
@@ -12,6 +16,12 @@ struct AccountDetail: View {
             Toggle("Debt?", isOn: $account.isDebt)
         }
         .navigationTitle(account.name)
+        .toolbar {
+            Button("Save") {
+                try? modelContext.save()
+                dismiss()
+            }
+        }
     }
 }
 
@@ -27,7 +37,7 @@ struct AccountDetail: View {
     container.mainContext.insert(sample)
 
     return NavigationStack {
-        AccountDetail(account: sample)
+        AccountDetail(account: sample, isNew: true)
     }
     .modelContainer(container)
 }
