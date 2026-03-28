@@ -5,11 +5,12 @@ struct AccountList: View {
     @Query var accounts: [Account]
     @Environment(\.modelContext) private var modelContext
 
+    
     @State private var path: NavigationPath = NavigationPath()
     
     enum Route: Hashable {
         case existingAccount(account: Account)
-        case newAccount(account: Account)
+        case newAccount
     }
 
     var body: some View {
@@ -26,9 +27,9 @@ struct AccountList: View {
             .navigationDestination(for: Route.self) { route in
                 switch route {
                 case .existingAccount(let account):
-                    AccountDetail(account: account, isNew: false)
-                case .newAccount(let account):
-                    AccountDetail(account: account, isNew: true)
+                    AccountDetail(account: account)
+                case .newAccount:
+                    AccountCreate()
                 }
             }
             .navigationTitle("Accounts")
@@ -44,7 +45,7 @@ struct AccountList: View {
         let account = Account()
         account.name = "New Account"
         modelContext.insert(account)
-        path.append(Route.newAccount(account: account))
+        path.append(Route.newAccount)
     }
 }
 

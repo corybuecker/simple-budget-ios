@@ -3,7 +3,6 @@ import SwiftUI
 
 struct AccountDetail: View {
     @Bindable var account: Account
-    let isNew: Bool
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
@@ -37,7 +36,7 @@ struct AccountDetail: View {
     container.mainContext.insert(sample)
 
     return NavigationStack {
-        AccountDetail(account: sample, isNew: true)
+        AccountDetail(account: sample)
     }
     .modelContainer(container)
 }
