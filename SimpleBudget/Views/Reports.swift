@@ -65,8 +65,10 @@ struct Reports: View {
                 HStack {
                     Text(balance.accountName)
                     Text(balance.balance.description)
+                    
                 }
             }
+            Text(reportsViewModel.financePermissionStatus.debugDescription)
 
             Button("Refresh accounts") {
                 Task {
@@ -74,7 +76,7 @@ struct Reports: View {
                         if reportsViewModel.financePermissionStatus != .authorized {
                             try await reportsViewModel.requestAccess()
                         }
-                        try await reportsViewModel.refreshAccountBalances()
+//                        try await reportsViewModel.refreshAccountBalances()
                     } catch {
                         print("could not get finance permission")
                     }

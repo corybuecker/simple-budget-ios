@@ -17,9 +17,11 @@ targets:
           - UIInterfaceOrientationPortrait
         UILaunchScreen: {}
         ITSAppUsesNonExemptEncryption: NO
+        NSFinancialDataUsageDescription: Simple Budget uses your financial data to sync account balances.
         CFBundleVersion: 1.0.3
         CFBundleShortVersionString: 1.0.3
     settings:
+      PRODUCT_NAME: "Simple Budget"
       PRODUCT_BUNDLE_IDENTIFIER: dev.corybuecker.simple-budget
       ENABLE_USER_SCRIPT_SANDBOXING: YES
       # build for iOS only

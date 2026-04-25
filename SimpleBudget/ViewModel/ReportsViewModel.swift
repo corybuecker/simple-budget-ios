@@ -53,6 +53,7 @@ class ReportsViewModel {
         }
     }
 
+    @MainActor
     func requestAccess() async throws {
         if financePermissionStatus == .authorized {
             return
