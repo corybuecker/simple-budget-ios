@@ -12,15 +12,23 @@ struct GoalList: View {
         case newGoal
     }
 
+    let progress: CGFloat = 0.5
+
     var body: some View {
         NavigationStack(path: $path) {
             List(goals) { goal in
-                NavigationLink(value: Route.existingGoal(goal: goal)) {
-                    VStack(alignment: .leading) {
-                        Text("\(goal.name) - \(goal.amount, format: .currency(code: "USD").precision(.fractionLength(0)))")
-                        Text("\(goal.recurrence.rawValue) · \(goal.targetDate, format: .dateTime.month().day().year())")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                GeometryReader { geo in
+                    NavigationLink(value: Route.existingGoal(goal: goal)) {
+                        ZStack(alignment: .leading) {
+                            Color.green.opacity(0.3)
+                                .frame(width: geo.size.width * progress)
+                            VStack(alignment: .leading) {
+                                Text("\(goal.name) - \(goal.amount, format: .currency(code: "USD").precision(.fractionLength(0)))")
+                                Text("\(goal.recurrence.rawValue) · \(goal.targetDate, format: .dateTime.month().day().year())")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                     }
                 }
                 .swipeActions(edge: .trailing) {
