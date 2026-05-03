@@ -2,7 +2,9 @@ import SwiftData
 import SwiftUI
 
 struct GoalList: View {
-    @Query var goals: [Goal]
+    static var goalsSortedByTargetDate: FetchDescriptor<Goal> = .init(sortBy: [SortDescriptor<Goal>(\Goal.targetDate)])
+    @Query(goalsSortedByTargetDate) var goals: [Goal]
+
     @Environment(\.modelContext) private var modelContext
 
     @State private var path: NavigationPath = .init()
@@ -32,10 +34,12 @@ struct GoalList: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         if let progressByGoalValue = progressByGoal[goal.id] {
-                            GeometryReader { geometry in
-                                Rectangle()
-                                    .fill(Color.green)
-                                    .frame(width: geometry.size.width * progressByGoalValue, height: 3)
+                            if progressByGoalValue > 0 {
+                                GeometryReader { geometry in
+                                    Rectangle()
+                                        .fill(Color.green)
+                                        .frame(width: geometry.size.width * progressByGoalValue, height: 3)
+                                }
                             }
                         }
                     }
@@ -76,6 +80,7 @@ struct GoalList: View {
         )
 
         let sampleGoals = [
+            ("Last Vacation", Decimal(2000), Recurrence.monthly, Date().advanced(by: TimeInterval(15_500_000))),
             ("Vacation", Decimal(2000), Recurrence.yearly, Date()),
             ("Emergency Fund", Decimal(500), Recurrence.monthly, Date().advanced(by: TimeInterval(1_500_000))),
             ("New Car", Decimal(5000), Recurrence.yearly, Date()),
