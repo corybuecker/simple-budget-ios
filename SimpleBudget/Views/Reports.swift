@@ -55,17 +55,29 @@ struct Reports: View {
         }
     }
 
+    private var accumulatedGoalsPerDay: Decimal {
+        let reportService = ReportService(accounts: accounts, envelopes: envelopes, goals: goals)
+
+        do {
+            return try reportService.accumulatedGoalsPerDay()
+        } catch {
+            return 0
+        }
+    }
+
     var body: some View {
         VStack {
             Text(remaining, format: .currency(code: Locale.current.currency?.identifier ?? "USD").precision(.significantDigits(4)))
-            Text(remainingTime, format: .number)
             Text(remainingPerDay, format: .currency(code: Locale.current.currency?.identifier ?? "USD").precision(.significantDigits(4)))
+            HStack(spacing: 0) {
+                Text("Goals per day: ")
+                Text(accumulatedGoalsPerDay, format: .currency(code: Locale.current.currency?.identifier ?? "USD").precision(.significantDigits(4)))
+            }
 
             ForEach(reportsViewModel.wrappedBalances) { balance in
                 HStack {
                     Text(balance.accountName)
                     Text(balance.balance.description)
-                    
                 }
             }
             Text(reportsViewModel.financePermissionStatus.debugDescription)

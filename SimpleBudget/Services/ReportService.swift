@@ -11,6 +11,14 @@ struct ReportService {
         self.goals = goals
     }
 
+    func progressByGoal() throws -> [Goal.ID: Double] {
+        do {
+            return try GoalsService(goals: goals).progressByGoal()
+        } catch {
+            return [:]
+        }
+    }
+
     func remaining() throws -> Decimal {
         let accountTotal: Decimal = try accounts.reduce(0) { result, account throws -> Decimal in
             let addition = account.isDebt ? -1 * account.balance : account.balance
@@ -47,6 +55,15 @@ struct ReportService {
         let secondsRemaining = Calendar.current.dateComponents([.second], from: Date.now, to: endOfThisMonth).second!
 
         return Decimal(secondsRemaining)
+    }
+
+    func accumulatedGoalsPerDay() throws -> Decimal {
+        try goals.reduce(0) { result, goal throws -> Decimal in
+            let goalService = GoalService(goal: goal)
+            let perDay = try goalService.perDay()
+
+            return result + perDay
+        }
     }
 
     func remainingPerDay() throws -> Decimal {

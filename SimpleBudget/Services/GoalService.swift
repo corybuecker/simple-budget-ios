@@ -27,6 +27,22 @@ struct GoalService {
         return amountPerIntervalTick * Decimal(timeInterval)
     }
 
+    func perDay() throws -> Decimal {
+        let startDate = try startDate()
+        let endDate = goal.targetDate
+
+        if Date() < startDate {
+            return 0
+        }
+
+        if Date() > endDate {
+            return 0
+        }
+
+        let daysInTimeInterval = endDate.timeIntervalSince(startDate) / 86400
+        return goal.amount / Decimal(daysInTimeInterval)
+    }
+
     private func duration() throws -> Int {
         0
     }
