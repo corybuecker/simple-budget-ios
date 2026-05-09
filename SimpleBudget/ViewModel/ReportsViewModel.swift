@@ -1,8 +1,10 @@
 import FinanceKit
+import os
 import SwiftUI
 
 protocol FinanceStoreProviding {
     func accountBalances(query: AccountBalanceQuery) async throws -> [AccountBalance]
+    func accounts(query: AccountQuery) async throws -> [FinanceKit.Account]
     func requestAuthorization() async throws -> FinanceKit.AuthorizationStatus
 }
 
@@ -14,6 +16,10 @@ struct MockFinanceStore: FinanceStoreProviding {
     }
 
     func accountBalances(query _: AccountBalanceQuery) async throws -> [AccountBalance] {
+        []
+    }
+
+    func accounts(query _: AccountQuery) async throws -> [FinanceKit.Account] {
         []
     }
 }
@@ -29,6 +35,8 @@ class ReportsViewModel {
     var financePermissionStatus: FinanceKit.AuthorizationStatus?
     var wrappedBalances: [WrappedAccountBalance] = []
 
+    let logger = Logger(subsystem: "dev.bueckered.simple-budget", category: "ReportViewModel")
+
     @ObservationIgnored
     private var store: FinanceStoreProviding
 
@@ -42,12 +50,31 @@ class ReportsViewModel {
 
     func refreshAccountBalances() async throws {
         if isUsingFinanceStore {
-            let accountsBalances = try await store.accountBalances(query: AccountBalanceQuery())
+            let accounts = try await store.accounts(query: AccountQuery())
+            let query = AccountBalanceQuery.predicate(availableSince: Date().addingTimeInterval(-86400))
+            let accountsBalances = try await store.accountBalances(query: AccountBalanceQuery(predicate: query))
 
-            wrappedBalances = accountsBalances.map { balance in
-                WrappedAccountBalance(
-                    accountName: balance.accountID.uuidString,
-                    balance: balance.booked?.amount.amount ?? 0
+            for accountsBalance in accountsBalances {
+                switch accountsBalance.currentBalance {
+                case let .available(balance):
+                    logger.debug("Available -> \(accountsBalance.accountID) - \(balance.amount.amount)")
+                case let .booked(balance):
+                    logger.debug("Booked -> \(accountsBalance.accountID) - \(balance.amount.amount)")
+                case let .availableAndBooked(_, booked):
+                    logger.debug("Available and booked -> \(accountsBalance.accountID) - \(booked.amount.amount)")
+                @unknown default:
+                    logger.error("not implemented")
+                }
+            }
+
+            wrappedBalances = accounts.map { account in
+                let currentBalance = accountsBalances.first(where: { balance in
+                    balance.accountID == account.id
+                })
+
+                return WrappedAccountBalance(
+                    accountName: account.displayName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased(),
+                    balance: currentBalance?.booked?.amount.amount ?? 0
                 )
             }
         }

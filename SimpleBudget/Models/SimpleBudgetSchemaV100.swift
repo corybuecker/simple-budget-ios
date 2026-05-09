@@ -55,11 +55,6 @@ struct SimpleBudgetSchemaV100: VersionedSchema {
     }
 }
 
-typealias Account = SimpleBudgetSchemaV100.Account
-typealias Envelope = SimpleBudgetSchemaV100.Envelope
-typealias Goal = SimpleBudgetSchemaV100.Goal
-typealias Recurrence = SimpleBudgetSchemaV100.Recurrence
-
 enum SimpleBudgetSchemaV100MigrationPlan: SchemaMigrationPlan {
     static let schemas: [any VersionedSchema.Type] = [SimpleBudgetSchemaV100.self]
 

@@ -1,25 +1,19 @@
+import os
 import SwiftData
 import SwiftUI
 
 struct Reports: View {
-    //            private var _accounts = Query<Account, [Account]>()
-    //
-    //            private var accounts: [Account] {
-    //                @storageRestrictions(initializes: _accounts)
-    //                init(initialValue) {
-    //                    _accounts = Query<Account, [Account]>()
-    //                }
-    //
-    //               get {
-    //                    _accounts.wrappedValue
-    //                }
-    //            }
     @Query private var accounts: [Account]
 
     @Query private var envelopes: [Envelope]
     @Query private var goals: [Goal]
 
     @State private var reportsViewModel: ReportsViewModel
+
+    @Environment(\.modelContext) private var context
+    private var preferences: Preferences {
+        Preferences.fetch(context: context)
+    }
 
     init(viewModel: ReportsViewModel?) {
         reportsViewModel = viewModel ?? ReportsViewModel()
@@ -65,32 +59,52 @@ struct Reports: View {
         }
     }
 
-    var body: some View {
-        VStack {
-            Text(remaining, format: .currency(code: Locale.current.currency?.identifier ?? "USD").precision(.significantDigits(4)))
-            Text(remainingPerDay, format: .currency(code: Locale.current.currency?.identifier ?? "USD").precision(.significantDigits(4)))
-            HStack(spacing: 0) {
-                Text("Goals per day: ")
-                Text(accumulatedGoalsPerDay, format: .currency(code: Locale.current.currency?.identifier ?? "USD").precision(.significantDigits(4)))
-            }
+    let logger = Logger(subsystem: "dev.bueckered.simple-budget", category: "Reports")
 
-            ForEach(reportsViewModel.wrappedBalances) { balance in
-                HStack {
-                    Text(balance.accountName)
-                    Text(balance.balance.description)
+    var body: some View {
+        NavigationStack {
+            VStack {
+                Text(remaining, format: .currency(code: Locale.current.currency?.identifier ?? "USD").precision(.significantDigits(4)))
+                Text(remainingPerDay, format: .currency(code: Locale.current.currency?.identifier ?? "USD").precision(.significantDigits(4)))
+                HStack(spacing: 0) {
+                    Text("Goals per day: ")
+                    Text(accumulatedGoalsPerDay, format: .currency(code: Locale.current.currency?.identifier ?? "USD").precision(.significantDigits(4)))
+                }
+
+                ForEach(reportsViewModel.wrappedBalances) { balance in
+                    if balance.accountName.starts(with: "apple"), balance.accountName.contains("card") {
+                        let realBalance = balance.balance - (preferences.appleCardInstallments ?? 0)
+
+                        HStack {
+                            Text("Adjusted Card")
+                            Text(realBalance.description)
+                        }
+                    } else {
+                        HStack {
+                            Text(balance.accountName.debugDescription)
+                            Text(balance.balance.description)
+                        }
+                    }
+                }
+                Text(reportsViewModel.financePermissionStatus.debugDescription)
+
+                Button("Refresh accounts") {
+                    Task {
+                        do {
+                            if reportsViewModel.financePermissionStatus != .authorized {
+                                try await reportsViewModel.requestAccess()
+                            }
+                            try await reportsViewModel.refreshAccountBalances()
+                        } catch {
+                            print("could not get finance permission")
+                        }
+                    }
                 }
             }
-            Text(reportsViewModel.financePermissionStatus.debugDescription)
-
-            Button("Refresh accounts") {
-                Task {
-                    do {
-                        if reportsViewModel.financePermissionStatus != .authorized {
-                            try await reportsViewModel.requestAccess()
-                        }
-//                        try await reportsViewModel.refreshAccountBalances()
-                    } catch {
-                        print("could not get finance permission")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: PreferencesEdit()) {
+                        Image(systemName: "gear")
                     }
                 }
             }
@@ -100,8 +114,8 @@ struct Reports: View {
 
 #Preview {
     let container: ModelContainer = {
-        let container: ModelContainer = try! ModelContainer(for: Schema(versionedSchema: SimpleBudgetSchemaV100.self),
-                                                            migrationPlan: SimpleBudgetSchemaV100MigrationPlan.self,
+        let container: ModelContainer = try! ModelContainer(for: Schema(versionedSchema: SimpleBudgetSchemaV110.self),
+                                                            migrationPlan: SimpleBudgetSchemaV110MigrationPlan.self,
                                                             configurations: ModelConfiguration(isStoredInMemoryOnly: true))
 
         let sampleAccounts = [
@@ -147,7 +161,7 @@ struct Reports: View {
     let viewModel: ReportsViewModel = {
         let vm = ReportsViewModel(store: MockFinanceStore())
         vm.wrappedBalances = [
-            WrappedAccountBalance(accountName: "Checking", balance: 1500.00),
+            WrappedAccountBalance(accountName: "apple card", balance: 1500.00),
             WrappedAccountBalance(accountName: "Savings", balance: 5000.00),
         ]
         return vm
